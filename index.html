@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Web Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h3>FLORIDA CANCER RATES PER 100,000 PEOPLE</h3>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([27, -83, ], 7); // Adjust coordinates and zoom level as needed
+
+        // Add OpenStreetMap baselayer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+       
+
+        // Load GeoJSON data
+        $.getJSON("FLORIDA/_florida_RATES_PER_100,000_PPLE.geojson", function(data) {
+                       var geojsonLayer = L.geoJson(data, {
+                onEachFeature: function (feature, layer) {
+                    // Popup with all attributes
+                    var popupContent = "<strong>Attributes:</strong><br>";
+                    for (var key in feature.properties) {
+                        popupContent += "<strong>" + key + ":</strong> " + feature.properties[key] + "<br>";
+                    }
+                    layer.bindPopup(popupContent);
+                }
+            }).addTo(map);
+
+            // Fit map to GeoJSON bounds
+            map.fitBounds(geojsonLayer.getBounds());
+        });
+    </script>
+</body>
+</html>
